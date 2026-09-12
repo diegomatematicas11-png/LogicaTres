@@ -1,345 +1,245 @@
-```java
-import javax.swing.JOptionPane;
+#include <iostream>
+#include <cmath>
+#include <iomanip>
 
-class Termino {
+using namespace std;
+
+struct Termino {
     float coeficiente;
-    int exponente;
-    Termino siguiente;
-
-    public Termino(float coef, int exp) {
-        coeficiente = coef;
-        exponente = exp;
-        siguiente = null;
-    }
+    int   exponente;
+    Termino* siguiente;
+};
+Termino* crearNodo(float coef, int exp) {
+    Termino* nuevo = new Termino();
+    nuevo->coeficiente = coef;
+    nuevo->exponente   = exp;
+    nuevo->siguiente   = nullptr;
+    return nuevo;
 }
-
-public class Polinomios {
-
-    // Crear un nuevo término
-    public static Termino crearNodo(float coef, int exp) {
-        Termino nuevo = new Termino(coef, exp);
+Termino* insertarTermino(Termino* cabeza, float coef, int exp) {
+    if (coef == 0.0f) return cabeza;
+    if (cabeza == nullptr || exp > cabeza->exponente) {
+        Termino* nuevo   = crearNodo(coef, exp);
+        nuevo->siguiente = cabeza;
         return nuevo;
-    }
-
-    // Insertar un término
-    public static Termino insertarTermino(Termino cabeza, float coef, int exp) {
-
-        if (coef == 0) {
-            return cabeza;
+    }   
+   if (cabeza->exponente == exp) {
+        cabeza->coeficiente += coef;
+        if (cabeza->coeficiente == 0.0f) {
+            Termino* temp = cabeza->siguiente;
+            delete cabeza;
+            return temp;
         }
-
-        if (cabeza == null || exp > cabeza.exponente) {
-            Termino nuevo = crearNodo(coef, exp);
-            nuevo.siguiente = cabeza;
-            return nuevo;
-        }
-
-        if (cabeza.exponente == exp) {
-            cabeza.coeficiente = cabeza.coeficiente + coef;
-
-            if (cabeza.coeficiente == 0) {
-                return cabeza.siguiente;
-            }
-
-            return cabeza;
-        }
-
-        Termino actual = cabeza;
-
-        while (actual.siguiente != null &&
-               actual.siguiente.exponente > exp) {
-
-            actual = actual.siguiente;
-        }
-
-        if (actual.siguiente != null &&
-            actual.siguiente.exponente == exp) {
-
-            actual.siguiente.coeficiente =
-                    actual.siguiente.coeficiente + coef;
-
-            if (actual.siguiente.coeficiente == 0) {
-                actual.siguiente = actual.siguiente.siguiente;
-            }
-
-        } else {
-
-            Termino nuevo = crearNodo(coef, exp);
-
-            nuevo.siguiente = actual.siguiente;
-            actual.siguiente = nuevo;
-        }
-
         return cabeza;
     }
-
-    // Imprimir polinomio
-    public static void imprimirPolinomio(Termino cabeza) {
-
-        if (cabeza == null) {
-            System.out.println("0");
-            return;
-        }
-
-        Termino actual = cabeza;
-        boolean primero = true;
-
-        while (actual != null) {
-
-            float coef = actual.coeficiente;
-            int exp = actual.exponente;
-
-            if (primero) {
-
-                if (coef < 0) {
-                    System.out.print("-");
-                }
-
-                primero = false;
-
-            } else {
-
-                if (coef < 0) {
-                    System.out.print(" - ");
-                } else {
-                    System.out.print(" + ");
-                }
-            }
-
-            float absCoef = coef;
-
-            if (absCoef < 0) {
-                absCoef = absCoef * -1;
-            }
-
-            if (exp == 0) {
-                System.out.print(absCoef);
-
-            } else if (absCoef != 1) {
-                System.out.print(absCoef);
-            }
-
-            if (exp == 1) {
-                System.out.print("x");
-
-            } else if (exp > 1) {
-                System.out.print("x^" + exp);
-            }
-
-            actual = actual.siguiente;
-        }
-
-        System.out.println();
+    Termino* actual = cabeza;
+    while (actual->siguiente != nullptr &&
+           actual->siguiente->exponente > exp) {
+        actual = actual->siguiente;
     }
 
-    // Sumar polinomios
-    public static Termino sumarPolinomios(Termino p1, Termino p2) {
-
-        Termino resultado = null;
-
-        Termino actual = p1;
-
-        while (actual != null) {
-
-            resultado = insertarTermino(
-                    resultado,
-                    actual.coeficiente,
-                    actual.exponente
-            );
-
-            actual = actual.siguiente;
+     if (actual->siguiente != nullptr &&
+        actual->siguiente->exponente == exp) {
+        actual->siguiente->coeficiente += coef;
+        if (actual->siguiente->coeficiente == 0.0f) {
+            Termino* temp    = actual->siguiente->siguiente;
+            delete actual->siguiente;
+            actual->siguiente = temp;
         }
-
-        actual = p2;
-
-        while (actual != null) {
-
-            resultado = insertarTermino(
-                    resultado,
-                    actual.coeficiente,
-                    actual.exponente
-            );
-
-            actual = actual.siguiente;
-        }
-
-        return resultado;
+    } else {
+         Termino* nuevo       = crearNodo(coef, exp);
+        nuevo->siguiente     = actual->siguiente;
+        actual->siguiente    = nuevo;
     }
-
-    // Multiplicar polinomios
-    public static Termino multiplicarPolinomios(Termino p1, Termino p2) {
-
-        Termino resultado = null;
-
-        Termino t1 = p1;
-
-        while (t1 != null) {
-
-            Termino t2 = p2;
-
-            while (t2 != null) {
-
-                float nuevoCoef =
-                        t1.coeficiente * t2.coeficiente;
-
-                int nuevoExp =
-                        t1.exponente + t2.exponente;
-
-                resultado = insertarTermino(
-                        resultado,
-                        nuevoCoef,
-                        nuevoExp
-                );
-
-                t2 = t2.siguiente;
-            }
-
-            t1 = t1.siguiente;
-        }
-
-        return resultado;
-    }
-
-    // Evaluar polinomio
-    public static float evaluarPolinomio(Termino cabeza, float x) {
-
-        float resultado = 0;
-
-        Termino actual = cabeza;
-
-        while (actual != null) {
-
-            float potencia = 1;
-
-            // Calcular x elevado al exponente
-            for (int i = 1; i <= actual.exponente; i++) {
-                potencia = potencia * x;
-            }
-
-            resultado = resultado +
-                    actual.coeficiente * potencia;
-
-            actual = actual.siguiente;
-        }
-
-        return resultado;
-    }
-
-    // Derivar polinomio
-    public static Termino derivarPolinomio(Termino cabeza) {
-
-        Termino resultado = null;
-
-        Termino actual = cabeza;
-
-        while (actual != null) {
-
-            if (actual.exponente != 0) {
-
-                float nuevoCoef =
-                        actual.coeficiente * actual.exponente;
-
-                int nuevoExp =
-                        actual.exponente - 1;
-
-                resultado = insertarTermino(
-                        resultado,
-                        nuevoCoef,
-                        nuevoExp
-                );
-            }
-
-            actual = actual.siguiente;
-        }
-
-        return resultado;
-    }
-
-    // Contar términos
-    public static int contarTerminos(Termino cabeza) {
-
-        int contador = 0;
-
-        Termino actual = cabeza;
-
-        while (actual != null) {
-
-            contador++;
-
-            actual = actual.siguiente;
-        }
-
-        return contador;
-    }
-
-    // Obtener grado
-    public static int gradoPolinomio(Termino cabeza) {
-
-        if (cabeza == null) {
-            return -1;
-        }
-
-        return cabeza.exponente;
-    }
-
-    public static void main(String[] args) {
-
-        Termino polinomio1 = null;
-        Termino polinomio2 = null;
-
-        // Ejemplo de polinomio 1:
-        // 3x^2 + 2x + 5
-        polinomio1 = insertarTermino(polinomio1, 3, 2);
-        polinomio1 = insertarTermino(polinomio1, 2, 1);
-        polinomio1 = insertarTermino(polinomio1, 5, 0);
-
-        // Ejemplo de polinomio 2:
-        // 4x^2 + 3x + 1
-        polinomio2 = insertarTermino(polinomio2, 4, 2);
-        polinomio2 = insertarTermino(polinomio2, 3, 1);
-        polinomio2 = insertarTermino(polinomio2, 1, 0);
-
-        System.out.println("POLINOMIO 1:");
-        imprimirPolinomio(polinomio1);
-
-        System.out.println("POLINOMIO 2:");
-        imprimirPolinomio(polinomio2);
-
-        System.out.println();
-
-        System.out.println("SUMA:");
-        Termino suma = sumarPolinomios(polinomio1, polinomio2);
-        imprimirPolinomio(suma);
-
-        System.out.println();
-
-        System.out.println("MULTIPLICACION:");
-        Termino multiplicacion =
-                multiplicarPolinomios(polinomio1, polinomio2);
-        imprimirPolinomio(multiplicacion);
-
-        System.out.println();
-
-        float x = 2;
-
-        System.out.println("EVALUACION EN x = " + x + ":");
-        System.out.println(evaluarPolinomio(polinomio1, x));
-
-        System.out.println();
-
-        System.out.println("DERIVADA:");
-        Termino derivada = derivarPolinomio(polinomio1);
-        imprimirPolinomio(derivada);
-
-        System.out.println();
-
-        System.out.println("CANTIDAD DE TERMINOS:");
-        System.out.println(contarTerminos(polinomio1));
-
-        System.out.println();
-
-        System.out.println("GRADO DEL POLINOMIO:");
-        System.out.println(gradoPolinomio(polinomio1));
-    }
+    return cabeza;
 }
-```
+void imprimirPolinomio(Termino* cabeza) {
+    if (cabeza == nullptr) {
+        cout << "0";
+        return;
+    }
+    Termino* actual  = cabeza;
+    bool     primero = true;
+
+    while (actual != nullptr) {
+        float coef = actual->coeficiente;
+        int   exp  = actual->exponente;
+
+        if (primero) {
+            if (coef < 0) cout << "-";
+            primero = false;
+        } else {
+            cout << (coef < 0 ? " - " : " + ");
+        }
+
+        float absCoef = fabs(coef);
+
+        if (exp == 0) {
+            cout << absCoef;
+        } else if (absCoef != 1.0f) {
+            cout << absCoef;
+        }
+
+
+        if (exp == 1)       cout << "x";
+        else if (exp > 1)   cout << "x^" << exp;
+
+        actual = actual->siguiente;
+    }
+    cout << endl;
+}
+
+int destruirPolinomio(Termino*& cabeza) {
+    int contador = 0;
+    while (cabeza != nullptr) {
+        Termino* temp = cabeza;
+        cabeza        = cabeza->siguiente;
+        delete temp;
+        contador++;
+    }
+    return contador;
+}
+Termino* sumarPolinomios(Termino* p1, Termino* p2) {
+    Termino* resultado = nullptr;
+
+    // Copiar todos los términos de P1
+    Termino* actual = p1;
+    while (actual != nullptr) {
+        resultado = insertarTermino(resultado,
+                                    actual->coeficiente,
+                                    actual->exponente);
+        actual = actual->siguiente;
+    }
+
+    // Sumar (insertar) todos los términos de P2
+    actual = p2;
+    while (actual != nullptr) {
+        resultado = insertarTermino(resultado,
+                                    actual->coeficiente,
+                                    actual->exponente);
+        actual = actual->siguiente;
+    }
+
+    return resultado;
+}
+
+Termino* multiplicarPolinomios(Termino* p1, Termino* p2) {
+    Termino* resultado = nullptr;
+    Termino* t1        = p1;
+
+    while (t1 != nullptr) {
+        Termino* t2 = p2;
+        while (t2 != nullptr) {
+            float nuevoCoef = t1->coeficiente * t2->coeficiente;
+            int   nuevoExp  = t1->exponente   + t2->exponente;
+            resultado = insertarTermino(resultado, nuevoCoef, nuevoExp);
+            t2 = t2->siguiente;
+        }
+        t1 = t1->siguiente;
+    }
+    return resultado;
+}
+
+float evaluarPolinomio(Termino* cabeza, float x) {
+    float    resultado = 0.0f;
+    Termino* actual    = cabeza;
+
+    while (actual != nullptr) {
+        resultado += actual->coeficiente * pow(x, actual->exponente);
+        actual = actual->siguiente;
+    }
+    return resultado;
+}
+
+Termino* derivarPolinomio(Termino* cabeza) {
+    Termino* resultado = nullptr;
+    Termino* actual    = cabeza;
+
+    while (actual != nullptr) {
+        if (actual->exponente != 0) {
+            float nuevoCoef = actual->coeficiente * actual->exponente;
+            int   nuevoExp  = actual->exponente - 1;
+            resultado = insertarTermino(resultado, nuevoCoef, nuevoExp);
+        }
+        actual = actual->siguiente;
+    }
+    return resultado;
+}
+
+int contarTerminos(Termino* cabeza) {
+    int      contador = 0;
+    Termino* actual   = cabeza;
+    while (actual != nullptr) {
+        contador++;
+        actual = actual->siguiente;
+    }
+    return contador;
+}
+
+int gradoPolinomio(Termino* cabeza) {
+    if (cabeza == nullptr) return -1;  // polinomio vacío
+    return cabeza->exponente;
+}
+
+void separador(const string& titulo) {
+    cout << "\n" << string(55, '=') << endl;
+    cout << "  " << titulo << endl;
+    cout << string(55, '=') << endl;
+}
+
+int main() {
+    // 1. Crear los polinomios de prueba
+    Termino* p1 = nullptr;
+    Termino* p2 = nullptr;
+
+    // Polinomio 1: 3x^4 - 2x^2 + 5
+    p1 = insertarTermino(p1, 3.0f, 4);
+    p1 = insertarTermino(p1, -2.0f, 2);
+    p1 = insertarTermino(p1, 5.0f, 0);
+
+    // Polinomio 2: 2x^3 + 2x^2 - 1
+    p2 = insertarTermino(p2, 2.0f, 3);
+    p2 = insertarTermino(p2, 2.0f, 2);
+    p2 = insertarTermino(p2, -1.0f, 0);
+
+    // 2. Demostración de operaciones básicas
+    separador("POLINOMIOS ORIGINALES");
+    cout << "P1(x) = "; imprimirPolinomio(p1);
+    cout << "Grado de P1: " << gradoPolinomio(p1) << " | Terminos: " << contarTerminos(p1) << endl;
+    
+    cout << "\nP2(x) = "; imprimirPolinomio(p2);
+    cout << "Grado de P2: " << gradoPolinomio(p2) << " | Terminos: " << contarTerminos(p2) << endl;
+
+    separador("OPERACIONES");
+    
+    // Suma: P1 + P2
+    Termino* suma = sumarPolinomios(p1, p2);
+    cout << "Suma P1(x) + P2(x) = "; 
+    imprimirPolinomio(suma);
+
+    // Multiplicación: P1 * P2
+    Termino* multiplicacion = multiplicarPolinomios(p1, p2);
+    cout << "Multiplicacion P1(x) * P2(x) = "; 
+    imprimirPolinomio(multiplicacion);
+
+    // Derivada de P1
+    Termino* derivada = derivarPolinomio(p1);
+    cout << "Derivada de P1'(x) = "; 
+    imprimirPolinomio(derivada);
+
+    separador("EVALUACION");
+    // Evaluar P1 cuando x = 2
+    float x_valor = 2.0f;
+    float evaluado = evaluarPolinomio(p1, x_valor);
+    cout << "Al evaluar P1(x) con x = " << x_valor << " el resultado es: " << evaluado << endl;
+
+    // 3. Liberar la memoria RAM utilizada
+    destruirPolinomio(p1);
+    destruirPolinomio(p2);
+    destruirPolinomio(suma);
+    destruirPolinomio(multiplicacion);
+    destruirPolinomio(derivada);
+
+    cout << "\nMemoria liberada con exito." << endl;
+    return 0;
+}
