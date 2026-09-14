@@ -1,9 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <string>
 
 using namespace std;
-
 struct Termino {
     float coeficiente;
     int   exponente;
@@ -186,60 +186,26 @@ void separador(const string& titulo) {
     cout << "  " << titulo << endl;
     cout << string(55, '=') << endl;
 }
-
-int main() {
-    // 1. Crear los polinomios de prueba
-    Termino* p1 = nullptr;
-    Termino* p2 = nullptr;
-
-    // Polinomio 1: 3x^4 - 2x^2 + 5
-    p1 = insertarTermino(p1, 3.0f, 4);
-    p1 = insertarTermino(p1, -2.0f, 2);
-    p1 = insertarTermino(p1, 5.0f, 0);
-
-    // Polinomio 2: 2x^3 + 2x^2 - 1
-    p2 = insertarTermino(p2, 2.0f, 3);
-    p2 = insertarTermino(p2, 2.0f, 2);
-    p2 = insertarTermino(p2, -1.0f, 0);
-
-    // 2. Demostración de operaciones básicas
-    separador("POLINOMIOS ORIGINALES");
-    cout << "P1(x) = "; imprimirPolinomio(p1);
-    cout << "Grado de P1: " << gradoPolinomio(p1) << " | Terminos: " << contarTerminos(p1) << endl;
-    
-    cout << "\nP2(x) = "; imprimirPolinomio(p2);
-    cout << "Grado de P2: " << gradoPolinomio(p2) << " | Terminos: " << contarTerminos(p2) << endl;
-
-    separador("OPERACIONES");
-    
-    // Suma: P1 + P2
-    Termino* suma = sumarPolinomios(p1, p2);
-    cout << "Suma P1(x) + P2(x) = "; 
-    imprimirPolinomio(suma);
-
-    // Multiplicación: P1 * P2
-    Termino* multiplicacion = multiplicarPolinomios(p1, p2);
-    cout << "Multiplicacion P1(x) * P2(x) = "; 
-    imprimirPolinomio(multiplicacion);
-
-    // Derivada de P1
-    Termino* derivada = derivarPolinomio(p1);
-    cout << "Derivada de P1'(x) = "; 
-    imprimirPolinomio(derivada);
-
-    separador("EVALUACION");
-    // Evaluar P1 cuando x = 2
-    float x_valor = 2.0f;
-    float evaluado = evaluarPolinomio(p1, x_valor);
-    cout << "Al evaluar P1(x) con x = " << x_valor << " el resultado es: " << evaluado << endl;
-
-    // 3. Liberar la memoria RAM utilizada
-    destruirPolinomio(p1);
-    destruirPolinomio(p2);
-    destruirPolinomio(suma);
-    destruirPolinomio(multiplicacion);
-    destruirPolinomio(derivada);
-
-    cout << "\nMemoria liberada con exito." << endl;
-    return 0;
+int main (){
+    Termino* nodo = nullptr;
+    Termino* nodo2 = nullptr;
+    float coeficiente=0;
+    int exponente=0;
+    nodo = insertarTermino (nodo, 4.0f,3);
+    nodo = insertarTermino (nodo, -2.0f,1);
+    nodo = insertarTermino (nodo, 5.0f,0);
+    nodo = insertarTermino (nodo, -1.0f,2);
+    cout << "Polinomio (x)";
+    imprimirPolinomio(nodo);
+    cout << "Grado: " << gradoPolinomio(nodo) <<endl;
+    cout << "Nodos: " << contarTerminos(nodo) <<endl;
+    for (int i = 0; i < 4; i++)
+    {
+        cout <<"Ingresa el coeficiente: ";
+        cin >> coeficiente;
+        cout <<"Ingresa el exponente: ";
+        cin >> exponente;
+        nodo2=insertarTermino(nodo2,coeficiente,exponente);
+    }
+    imprimirPolinomio(nodo2);    
 }
