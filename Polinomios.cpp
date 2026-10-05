@@ -264,8 +264,6 @@ int main()
 
     suma = sumarPolinomios(nodo, nodo2);
     cout << "La suma de los polinomios es: " << endl;
-    imprimirPolinomio(suma);
-
     cout << "Liberar memoria" << endl;
     int liberar = 0;
     liberar = destruirPolinomio(nodo);
